@@ -47,8 +47,8 @@ var jsPsychVisualSearch = (function (jspsych) {
             const zYMin = targetY - yJitter;
             const zYMax = targetY + yJitter;
             let arr = null;
-            for (let t = 0; t < 60 && !arr; t++) arr = tryOne(zXMin, zXMax, zYMin, zYMax);
-            if (arr) result.push(arr);
+            while (!arr) arr = tryOne(zXMin, zXMax, zYMin, zYMax);
+            result.push(arr);
         }
         return result;
 
