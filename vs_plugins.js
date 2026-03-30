@@ -210,11 +210,12 @@ var jsPsychVisualSearch = (function (jspsych) {
 
         trial(display_element, trial) {
 
-            const pr   = window.devicePixelRatio || 1;
-            const W    = window.innerWidth  - 20;
-            const H    = window.innerHeight - 20;
-            const cx   = W / 2;
-            const cy   = H / 2;
+            const pr    = window.devicePixelRatio || 1;
+            const W     = 1920;
+            const H     = 1080;
+            const cx    = W / 2;
+            const cy    = H / 2;
+            const scale = Math.min(window.innerWidth / W, window.innerHeight / H);
             const imgW = trial.image_size[0];
             const imgH = trial.image_size[1];
             const cImgW = trial.coloured_image_size[0];
@@ -225,9 +226,13 @@ var jsPsychVisualSearch = (function (jspsych) {
             const self = this;
 
             // ── Canvas ────────────────────────────────────────────────
+            const cssW = W * scale;
+            const cssH = H * scale;
+            const marginTop = (window.innerHeight - cssH) / 2;
+
             display_element.innerHTML =
                 `<style>
-                  #vs-canvas { display:block; }
+                  #vs-canvas { display:block; margin:${marginTop}px auto 0; }
                   .jspsych-content-wrapper { width:100% !important; }
                   .jspsych-content { max-width:100% !important; padding:0 !important; }
                 </style>
@@ -237,8 +242,8 @@ var jsPsychVisualSearch = (function (jspsych) {
             const ctx    = canvas.getContext('2d');
             canvas.width        = W * pr;
             canvas.height       = H * pr;
-            canvas.style.width  = W + 'px';
-            canvas.style.height = H + 'px';
+            canvas.style.width  = cssW + 'px';
+            canvas.style.height = cssH + 'px';
             ctx.scale(pr, pr);
 
             // ── State ─────────────────────────────────────────────────

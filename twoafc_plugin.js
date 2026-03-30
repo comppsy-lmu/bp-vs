@@ -42,9 +42,10 @@ var jsPsychTwoAFC = (function (jspsych) {
         trial(display_element, trial) {
 
             const self = this;
-            const pr   = window.devicePixelRatio || 1;
-            const W    = window.innerWidth  - 20;
-            const H    = window.innerHeight - 20;
+            const pr    = window.devicePixelRatio || 1;
+            const W     = 1920;
+            const H     = 1080;
+            const scale = Math.min(window.innerWidth / W, window.innerHeight / H);
 
             const stored = trial.stored_trial;
             const imgPositions = stored.image_positions; // [{src, x, y, w, h}]
@@ -107,9 +108,13 @@ var jsPsychTwoAFC = (function (jspsych) {
             };
 
             // ── Phase 1: Canvas display ───────────────────────────────
+            const cssW = W * scale;
+            const cssH = H * scale;
+            const marginTop = (window.innerHeight - cssH) / 2;
+
             display_element.innerHTML =
                 `<style>
-                  #twoafc-canvas { display:block; cursor:pointer; }
+                  #twoafc-canvas { display:block; cursor:pointer; margin:${marginTop}px auto 0; }
                   .jspsych-content-wrapper { width:100% !important; }
                   .jspsych-content { max-width:100% !important; padding:0 !important; }
                 </style>
@@ -119,8 +124,8 @@ var jsPsychTwoAFC = (function (jspsych) {
             const ctx    = canvas.getContext('2d');
             canvas.width        = W * pr;
             canvas.height       = H * pr;
-            canvas.style.width  = W + 'px';
-            canvas.style.height = H + 'px';
+            canvas.style.width  = cssW + 'px';
+            canvas.style.height = cssH + 'px';
             ctx.scale(pr, pr);
 
             // Load all images except target and except images sitting at either candidate position
@@ -192,8 +197,8 @@ var jsPsychTwoAFC = (function (jspsych) {
             function addListeners() {
                 canvas.addEventListener('mousemove', function (e) {
                     const rect = canvas.getBoundingClientRect();
-                    const mx   = e.clientX - rect.left;
-                    const my   = e.clientY - rect.top;
+                    const mx   = (e.clientX - rect.left) / rect.width * W;
+                    const my   = (e.clientY - rect.top) / rect.height * H;
                     let hovered = null;
                     for (const opt of options) {
                         if (mx >= opt.pos.x - imgW / 2 && mx <= opt.pos.x + imgW / 2 &&
@@ -206,8 +211,8 @@ var jsPsychTwoAFC = (function (jspsych) {
 
                 function clickHandler(e) {
                     const rect = canvas.getBoundingClientRect();
-                    const mx   = e.clientX - rect.left;
-                    const my   = e.clientY - rect.top;
+                    const mx   = (e.clientX - rect.left) / rect.width * W;
+                    const my   = (e.clientY - rect.top) / rect.height * H;
                     for (const opt of options) {
                         if (mx >= opt.pos.x - imgW / 2 && mx <= opt.pos.x + imgW / 2 &&
                             my >= opt.pos.y - imgH / 2 && my <= opt.pos.y + imgH / 2) {
